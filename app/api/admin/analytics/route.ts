@@ -32,10 +32,14 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(analytics);
 
-  } catch (error: any) {
-    console.error('❌ Error fetching ultra-precise analytics:', error);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Error fetching ultra-precise analytics:', errorMessage);
+
     return NextResponse.json({
+      success: false,
       error: 'Internal server error',
+      details: errorMessage,
       totalSessions: 0,
       uniqueVisitors: 0,
       avgSessionDuration: 0,
@@ -241,39 +245,12 @@ function processUltraPreciseAnalytics(sessions: any[]) {
 
 function getCountryCode(countryName: string): string {
   const countryMap: { [key: string]: string } = {
-    'Egypt': 'EG',
-    'Saudi Arabia': 'SA',
-    'United Arab Emirates': 'AE',
-    'United States': 'US',
-    'United Kingdom': 'GB',
-    'Germany': 'DE',
-    'France': 'FR',
-    'Canada': 'CA',
-    'Australia': 'AU',
-    'India': 'IN',
-    'China': 'CN',
-    'Japan': 'JP',
-    'Brazil': 'BR',
-    'Russia': 'RU',
-    'Italy': 'IT',
-    'Spain': 'ES',
-    'Netherlands': 'NL',
-    'Turkey': 'TR',
-    'Kuwait': 'KW',
-    'Qatar': 'QA',
-    'Bahrain': 'BH',
-    'Oman': 'OM',
-    'Jordan': 'JO',
-    'Lebanon': 'LB',
-    'Morocco': 'MA',
-    'Algeria': 'DZ',
-    'Tunisia': 'TN',
-    'Libya': 'LY',
-    'Sudan': 'SD',
-    'Iraq': 'IQ',
-    'Syria': 'SY',
-    'Yemen': 'YE',
-    'Palestine': 'PS'
+    'Egypt': 'EG', 'Saudi Arabia': 'SA', 'United Arab Emirates': 'AE', 'United States': 'US',
+    'United Kingdom': 'GB', 'Germany': 'DE', 'France': 'FR', 'Canada': 'CA', 'Australia': 'AU',
+    'India': 'IN', 'China': 'CN', 'Japan': 'JP', 'Brazil': 'BR', 'Russia': 'RU', 'Italy': 'IT',
+    'Spain': 'ES', 'Netherlands': 'NL', 'Turkey': 'TR', 'Kuwait': 'KW', 'Qatar': 'QA', 'Bahrain': 'BH',
+    'Oman': 'OM', 'Jordan': 'JO', 'Lebanon': 'LB', 'Morocco': 'MA', 'Algeria': 'DZ', 'Tunisia': 'TN',
+    'Libya': 'LY', 'Sudan': 'SD', 'Iraq': 'IQ', 'Syria': 'SY', 'Yemen': 'YE', 'Palestine': 'PS'
   };
   return countryMap[countryName] || 'UN';
 }
