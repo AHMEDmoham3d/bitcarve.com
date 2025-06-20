@@ -73,14 +73,14 @@ function processUltraPreciseAnalytics(sessions: any[]) {
     ? Math.round(completedSessions.reduce((a, b) => a + b, 0) / completedSessions.length)
     : 0;
 
-  const countryCount: { [key: string]: number } = {};
-  const regionCount: { [key: string]: number } = {};
-  const cityCount: { [key: string]: number } = {};
-  const districtCount: { [key: string]: number } = {};
-  const ispCount: { [key: string]: number } = {};
-  const timezoneCount: { [key: string]: number } = {};
-  const sectionCount: { [key: string]: number } = {};
-  const precisionStats: { [key: string]: number } = {};
+  const countryCount: Record<string, number> = {};
+  const regionCount: Record<string, number> = {};
+  const cityCount: Record<string, number> = {};
+  const districtCount: Record<string, number> = {};
+  const ispCount: Record<string, number> = {};
+  const timezoneCount: Record<string, number> = {};
+  const sectionCount: Record<string, number> = {};
+  const precisionStats: Record<string, number> = {};
 
   sessionStarts.forEach(session => {
     const country = session.country || 'Unknown';
@@ -244,7 +244,7 @@ function processUltraPreciseAnalytics(sessions: any[]) {
 }
 
 function getCountryCode(countryName: string): string {
-  const countryMap: { [key: string]: string } = {
+  const countryMap: Record<string, string> = {
     'Egypt': 'EG', 'Saudi Arabia': 'SA', 'United Arab Emirates': 'AE', 'United States': 'US',
     'United Kingdom': 'GB', 'Germany': 'DE', 'France': 'FR', 'Canada': 'CA', 'Australia': 'AU',
     'India': 'IN', 'China': 'CN', 'Japan': 'JP', 'Brazil': 'BR', 'Russia': 'RU', 'Italy': 'IT',
