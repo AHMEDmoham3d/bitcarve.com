@@ -6,13 +6,13 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   console.log('📈 Ultra-precise admin analytics API called');
-  
+
   try {
     const dataDir = path.join(process.cwd(), 'data');
     const sessionsFile = path.join(dataDir, 'sessions.json');
-    
+
     let sessions = [];
-    
+
     try {
       const data = await fs.readFile(sessionsFile, 'utf8');
       sessions = JSON.parse(data);
@@ -21,9 +21,8 @@ export async function GET(request: NextRequest) {
       sessions = [];
     }
 
-    // Process ultra-precise analytics data
     const analytics = processUltraPreciseAnalytics(sessions);
-    
+
     console.log('📊 Ultra-precise analytics processed:', {
       totalSessions: analytics.totalSessions,
       uniqueVisitors: analytics.uniqueVisitors,
@@ -32,8 +31,8 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(analytics);
-    
-  } catch (error) {
+
+  } catch (error: any) {
     console.error('❌ Error fetching ultra-precise analytics:', error);
     return NextResponse.json({
       error: 'Internal server error',
@@ -54,155 +53,110 @@ export async function GET(request: NextRequest) {
 }
 
 function processUltraPreciseAnalytics(sessions: any[]) {
-  // Get unique sessions (session_start events)
   const sessionStarts = sessions.filter(s => s.eventType === 'session_start');
   const sessionEnds = sessions.filter(s => s.eventType === 'session_end');
   const sessionUpdates = sessions.filter(s => s.eventType === 'session_update');
-  
-  // Calculate basic stats
+
   const totalSessions = sessionStarts.length;
   const uniqueVisitors = new Set(sessionStarts.map(s => s.ip)).size;
-  
-  // Calculate average session duration
+
   const completedSessions = sessionEnds.map(end => {
     const start = sessionStarts.find(s => s.sessionId === end.sessionId);
     return start ? end.sessionDuration : 0;
   }).filter(duration => duration > 0);
-  
+
   const avgSessionDuration = completedSessions.length > 0 
     ? Math.round(completedSessions.reduce((a, b) => a + b, 0) / completedSessions.length)
     : 0;
 
-  // Ultra-precise location analytics
-  
-  // Top countries
-  const countryCount = {};
+  const countryCount: { [key: string]: number } = {};
+  const regionCount: { [key: string]: number } = {};
+  const cityCount: { [key: string]: number } = {};
+  const districtCount: { [key: string]: number } = {};
+  const ispCount: { [key: string]: number } = {};
+  const timezoneCount: { [key: string]: number } = {};
+  const sectionCount: { [key: string]: number } = {};
+  const precisionStats: { [key: string]: number } = {};
+
   sessionStarts.forEach(session => {
     const country = session.country || 'Unknown';
-const countryCount: { [key: string]: number } = {};
-  });
-  
-const topCountries = (Object.entries(countryCount) as [string, number][])
-  .map(([country, count]) => ({
-    country,
-    count,
-    countryCode: getCountryCode(country),
-    percentage: Math.round((count / totalSessions) * 100),
-  }))
-  .sort((a, b) => b.count - a.count)
-  .slice(0, 10);
+    countryCount[country] = (countryCount[country] || 0) + 1;
 
-
-  // Top regions/governorates
-  const regionCount = {};
-  sessionStarts.forEach(session => {
     if (session.region && session.region !== 'Unknown') {
       const key = `${session.region}, ${session.country}`;
-const countryCount: { [key: string]: number } = {};
+      regionCount[key] = (regionCount[key] || 0) + 1;
     }
-  });
-  
-const topRegions = (Object.entries(regionCount) as [string, number][])
-  .map(([region, count]) => ({ 
-    region, 
-    count,
-    percentage: Math.round((count / totalSessions) * 100)
-  }))
-  .sort((a, b) => b.count - a.count)
-  .slice(0, 10);
 
-
-  // Top cities
-  const cityCount = {};
-  sessionStarts.forEach(session => {
     if (session.city && session.city !== 'Unknown') {
       const key = `${session.city}, ${session.region || session.country}`;
-const countryCount: { [key: string]: number } = {};
+      cityCount[key] = (cityCount[key] || 0) + 1;
     }
-  });
-  
-const topCities = (Object.entries(cityCount) as [string, number][])
-  .map(([city, count]) => ({ 
-    city, 
-    count,
-    percentage: Math.round((count / totalSessions) * 100)
-  }))
-  .sort((a, b) => b.count - a.count)
-  .slice(0, 10);
 
-
-  // Top districts/neighborhoods
-  const districtCount = {};
-  sessionStarts.forEach(session => {
     if (session.district && session.district !== 'Unknown') {
       const key = `${session.district}, ${session.city}`;
-const countryCount: { [key: string]: number } = {};
+      districtCount[key] = (districtCount[key] || 0) + 1;
     }
-  });
-  
-const topDistricts = (Object.entries(districtCount) as [string, number][])
-  .map(([district, count]) => ({ 
-    district, 
-    count,
-    percentage: Math.round((count / totalSessions) * 100)
-  }))
-  .sort((a, b) => b.count - a.count)
-  .slice(0, 10);
 
-
-  // Precision level statistics
-  const precisionStats = {};
-  sessionStarts.forEach(session => {
-    const level = session.precisionLevel || 'Basic';
-const countryCount: { [key: string]: number } = {};
-  });
-
-  // ISP/Organization statistics
-  const ispCount = {};
-  sessionStarts.forEach(session => {
     if (session.isp && session.isp !== 'Unknown') {
-const countryCount: { [key: string]: number } = {};
+      ispCount[session.isp] = (ispCount[session.isp] || 0) + 1;
     }
-  });
-  
-const topISPs = (Object.entries(ispCount) as [string, number][])
-  .map(([isp, count]) => ({ isp, count }))
-  .sort((a, b) => b.count - a.count)
-  .slice(0, 5);
 
-
-  // Timezone statistics
-  const timezoneCount = {};
-  sessionStarts.forEach(session => {
     if (session.timezone && session.timezone !== 'Unknown') {
-const countryCount: { [key: string]: number } = {};
+      timezoneCount[session.timezone] = (timezoneCount[session.timezone] || 0) + 1;
+    }
+
+    const level = session.precisionLevel || 'Basic';
+    precisionStats[level] = (precisionStats[level] || 0) + 1;
+  });
+
+  [...sessionStarts, ...sessionUpdates, ...sessionEnds].forEach(session => {
+    if (session.sections && typeof session.sections === 'object') {
+      const sections = session.sections as Record<string, number>;
+      Object.entries(sections).forEach(([section, views]) => {
+        sectionCount[section] = (sectionCount[section] || 0) + views;
+      });
     }
   });
-  
-const topTimezones = (Object.entries(timezoneCount) as [string, number][])
-  .map(([timezone, count]) => ({ timezone, count }))
-  .sort((a, b) => b.count - a.count)
-  .slice(0, 5);
 
+  const topCountries = Object.entries(countryCount)
+    .map(([country, count]) => ({
+      country,
+      count,
+      countryCode: getCountryCode(country),
+      percentage: Math.round((count / totalSessions) * 100),
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
 
-  // Top sections
-// Top sections
-const sectionCount = {};
-[...sessionStarts, ...sessionUpdates, ...sessionEnds].forEach(session => {
-  if (session.sections && typeof session.sections === 'object') {
-    const sections = session.sections as Record<string, number>;
-    Object.entries(sections).forEach(([section, views]) => {
-const countryCount: { [key: string]: number } = {};
-    });
-  }
-});
-  
-const topSections = (Object.entries(sectionCount) as [string, number][])
-  .map(([section, views]) => ({ section, views }))
-  .sort((a, b) => b.views - a.views);
+  const topRegions = Object.entries(regionCount)
+    .map(([region, count]) => ({ region, count, percentage: Math.round((count / totalSessions) * 100) }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
 
+  const topCities = Object.entries(cityCount)
+    .map(([city, count]) => ({ city, count, percentage: Math.round((count / totalSessions) * 100) }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
 
-  // Recent sessions with ultra-precise location data
+  const topDistricts = Object.entries(districtCount)
+    .map(([district, count]) => ({ district, count, percentage: Math.round((count / totalSessions) * 100) }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  const topISPs = Object.entries(ispCount)
+    .map(([isp, count]) => ({ isp, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  const topTimezones = Object.entries(timezoneCount)
+    .map(([timezone, count]) => ({ timezone, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  const topSections = Object.entries(sectionCount)
+    .map(([section, views]) => ({ section, views }))
+    .sort((a, b) => b.views - a.views);
+
   const recentSessions = sessionStarts
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     .slice(0, 50)
@@ -218,19 +172,18 @@ const topSections = (Object.entries(sectionCount) as [string, number][])
       };
     });
 
-  // Hourly stats for last 24 hours
   const now = new Date();
   const hourlyStats = [];
   for (let i = 23; i >= 0; i--) {
     const hour = new Date(now.getTime() - i * 60 * 60 * 1000);
     const hourStart = new Date(hour.getFullYear(), hour.getMonth(), hour.getDate(), hour.getHours());
     const hourEnd = new Date(hourStart.getTime() + 60 * 60 * 1000);
-    
+
     const sessionsInHour = sessionStarts.filter(session => {
       const sessionTime = new Date(session.timestamp);
       return sessionTime >= hourStart && sessionTime < hourEnd;
     }).length;
-    
+
     hourlyStats.push({
       hour: hour.getHours(),
       sessions: sessionsInHour,
@@ -238,7 +191,6 @@ const topSections = (Object.entries(sectionCount) as [string, number][])
     });
   }
 
-  // Device stats (enhanced detection from user agent)
   const deviceStats = { desktop: 0, mobile: 0, tablet: 0 };
   sessionStarts.forEach(session => {
     const ua = session.userAgent?.toLowerCase() || '';
@@ -251,7 +203,6 @@ const topSections = (Object.entries(sectionCount) as [string, number][])
     }
   });
 
-  // Bounce rate (sessions with duration < 30 seconds)
   const shortSessions = completedSessions.filter(duration => duration < 30).length;
   const bounceRate = completedSessions.length > 0 
     ? Math.round((shortSessions / completedSessions.length) * 100)
@@ -324,6 +275,5 @@ function getCountryCode(countryName: string): string {
     'Yemen': 'YE',
     'Palestine': 'PS'
   };
-  
   return countryMap[countryName] || 'UN';
 }
