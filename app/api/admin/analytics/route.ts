@@ -79,105 +79,111 @@ function processUltraPreciseAnalytics(sessions: any[]) {
   const countryCount = {};
   sessionStarts.forEach(session => {
     const country = session.country || 'Unknown';
-    countryCount[country] = (countryCount[country] || 0) + 1;
+const countryCount: { [key: string]: number } = {};
   });
   
-  const topCountries = Object.entries(countryCount)
-    .map(([country, count]) => ({ 
-      country, 
-      count, 
-      countryCode: getCountryCode(country),
-      percentage: Math.round((count / totalSessions) * 100)
-    }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
+const topCountries = (Object.entries(countryCount) as [string, number][])
+  .map(([country, count]) => ({
+    country,
+    count,
+    countryCode: getCountryCode(country),
+    percentage: Math.round((count / totalSessions) * 100),
+  }))
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 10);
+
 
   // Top regions/governorates
   const regionCount = {};
   sessionStarts.forEach(session => {
     if (session.region && session.region !== 'Unknown') {
       const key = `${session.region}, ${session.country}`;
-      regionCount[key] = (regionCount[key] || 0) + 1;
+const countryCount: { [key: string]: number } = {};
     }
   });
   
-  const topRegions = Object.entries(regionCount)
-    .map(([region, count]) => ({ 
-      region, 
-      count,
-      percentage: Math.round((count / totalSessions) * 100)
-    }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
+const topRegions = (Object.entries(regionCount) as [string, number][])
+  .map(([region, count]) => ({ 
+    region, 
+    count,
+    percentage: Math.round((count / totalSessions) * 100)
+  }))
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 10);
+
 
   // Top cities
   const cityCount = {};
   sessionStarts.forEach(session => {
     if (session.city && session.city !== 'Unknown') {
       const key = `${session.city}, ${session.region || session.country}`;
-      cityCount[key] = (cityCount[key] || 0) + 1;
+const countryCount: { [key: string]: number } = {};
     }
   });
   
-  const topCities = Object.entries(cityCount)
-    .map(([city, count]) => ({ 
-      city, 
-      count,
-      percentage: Math.round((count / totalSessions) * 100)
-    }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
+const topCities = (Object.entries(cityCount) as [string, number][])
+  .map(([city, count]) => ({ 
+    city, 
+    count,
+    percentage: Math.round((count / totalSessions) * 100)
+  }))
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 10);
+
 
   // Top districts/neighborhoods
   const districtCount = {};
   sessionStarts.forEach(session => {
     if (session.district && session.district !== 'Unknown') {
       const key = `${session.district}, ${session.city}`;
-      districtCount[key] = (districtCount[key] || 0) + 1;
+const countryCount: { [key: string]: number } = {};
     }
   });
   
-  const topDistricts = Object.entries(districtCount)
-    .map(([district, count]) => ({ 
-      district, 
-      count,
-      percentage: Math.round((count / totalSessions) * 100)
-    }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
+const topDistricts = (Object.entries(districtCount) as [string, number][])
+  .map(([district, count]) => ({ 
+    district, 
+    count,
+    percentage: Math.round((count / totalSessions) * 100)
+  }))
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 10);
+
 
   // Precision level statistics
   const precisionStats = {};
   sessionStarts.forEach(session => {
     const level = session.precisionLevel || 'Basic';
-    precisionStats[level] = (precisionStats[level] || 0) + 1;
+const countryCount: { [key: string]: number } = {};
   });
 
   // ISP/Organization statistics
   const ispCount = {};
   sessionStarts.forEach(session => {
     if (session.isp && session.isp !== 'Unknown') {
-      ispCount[session.isp] = (ispCount[session.isp] || 0) + 1;
+const countryCount: { [key: string]: number } = {};
     }
   });
   
-  const topISPs = Object.entries(ispCount)
-    .map(([isp, count]) => ({ isp, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
+const topISPs = (Object.entries(ispCount) as [string, number][])
+  .map(([isp, count]) => ({ isp, count }))
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 5);
+
 
   // Timezone statistics
   const timezoneCount = {};
   sessionStarts.forEach(session => {
     if (session.timezone && session.timezone !== 'Unknown') {
-      timezoneCount[session.timezone] = (timezoneCount[session.timezone] || 0) + 1;
+const countryCount: { [key: string]: number } = {};
     }
   });
   
-  const topTimezones = Object.entries(timezoneCount)
-    .map(([timezone, count]) => ({ timezone, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
+const topTimezones = (Object.entries(timezoneCount) as [string, number][])
+  .map(([timezone, count]) => ({ timezone, count }))
+  .sort((a, b) => b.count - a.count)
+  .slice(0, 5);
+
 
   // Top sections
 // Top sections
@@ -186,14 +192,15 @@ const sectionCount = {};
   if (session.sections && typeof session.sections === 'object') {
     const sections = session.sections as Record<string, number>;
     Object.entries(sections).forEach(([section, views]) => {
-      sectionCount[section] = (sectionCount[section] || 0) + views;
+const countryCount: { [key: string]: number } = {};
     });
   }
 });
   
-  const topSections = Object.entries(sectionCount)
-    .map(([section, views]) => ({ section, views }))
-    .sort((a, b) => b.views - a.views);
+const topSections = (Object.entries(sectionCount) as [string, number][])
+  .map(([section, views]) => ({ section, views }))
+  .sort((a, b) => b.views - a.views);
+
 
   // Recent sessions with ultra-precise location data
   const recentSessions = sessionStarts
