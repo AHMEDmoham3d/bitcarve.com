@@ -180,14 +180,16 @@ function processUltraPreciseAnalytics(sessions: any[]) {
     .slice(0, 5);
 
   // Top sections
-  const sectionCount = {};
-  [...sessionStarts, ...sessionUpdates, ...sessionEnds].forEach(session => {
-    if (session.sections) {
-      Object.entries(session.sections).forEach(([section, views]) => {
-        sectionCount[section] = (sectionCount[section] || 0) + views;
-      });
-    }
-  });
+// Top sections
+const sectionCount = {};
+[...sessionStarts, ...sessionUpdates, ...sessionEnds].forEach(session => {
+  if (session.sections && typeof session.sections === 'object') {
+    const sections = session.sections as Record<string, number>;
+    Object.entries(sections).forEach(([section, views]) => {
+      sectionCount[section] = (sectionCount[section] || 0) + views;
+    });
+  }
+});
   
   const topSections = Object.entries(sectionCount)
     .map(([section, views]) => ({ section, views }))
